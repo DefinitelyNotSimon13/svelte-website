@@ -1,7 +1,8 @@
 <script lang="ts">
-	import SignupForm from '../components/signup-form.svelte';
+	import SignupForm from './signup-form.svelte';
+	let { data } = $props();
 </script>
 
 <div class="flex h-full w-full items-center justify-center px-4">
-	<SignupForm />
+	<SignupForm data={data.form} />
 </div>

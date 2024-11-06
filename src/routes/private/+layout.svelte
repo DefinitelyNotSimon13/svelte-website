@@ -1,6 +1,5 @@
 <script>
 	let { children, data } = $props();
-
 	const logout = async () => {
 		const { error } = await data.supabase.auth.signOut();
 		if (error) {

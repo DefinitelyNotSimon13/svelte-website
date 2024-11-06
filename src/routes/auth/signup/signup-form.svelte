@@ -1,32 +1,97 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import * as Card from "$lib/components/ui/card";
-	import { Input } from "$lib/components/ui/input";
-	import { Label } from "$lib/components/ui/label";
+	import * as Form from '$lib/components/ui/form/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { signupSchema, type SignupSchema } from './schema';
+	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+
+	import * as Card from '$lib/components/ui/card';
+	import Seperator from '$lib/components/seperator.svelte';
+	import GoogleButton from '../components/google-button.svelte';
+	import GithubButton from '../components/github-button.svelte';
+
+	export let data: SuperValidated<Infer<SignupSchema>>;
+
+	const form = superForm(data, {
+		validators: zodClient(signupSchema)
+	});
+
+	const { form: formData, enhance } = form;
 </script>
 
-<Card.Root class="mx-auto max-w-sm">
+<Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
-		<Card.Title class="text-2xl">Sign Up</Card.Title>
-		<Card.Description>Enter your email below to login to your account</Card.Description>
+		<Card.Title class="text-2xl">Welcome back</Card.Title>
+		<Card.Description>Sign in to your account</Card.Description>
 	</Card.Header>
 	<Card.Content>
-		<div class="grid gap-4">
-			<div class="grid gap-2">
-				<Label for="email">Email</Label>
-				<Input id="email" type="email" placeholder="m@example.com" required />
+		<form method="POST" action="?/signup" use:enhance>
+			<div class="grid gap-4">
+				<GithubButton text="Continue with GitHub" formaction="?/continueWithGithub" />
+				<GoogleButton text="Continue with Google" formaction="?/continueWithGoogle" />
 			</div>
-			<div class="grid gap-2">
-				<div class="flex items-center">
-					<Label for="password">Password</Label>
-					<a href="##" class="ml-auto inline-block text-sm underline">
-						Forgot your password?
-					</a>
+			<Seperator text="or" />
+
+			<div class="grid gap-4">
+				<Form.Field {form} name="username">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label class="text-gray-400">Username</Form.Label>
+							<Input {...props} bind:value={$formData.username} />
+						{/snippet}
+					</Form.Control>
+					<Form.Description></Form.Description>
+					<Form.FieldErrors />
+				</Form.Field>
+				<div class="grid grid-cols-2">
+					<Form.Field {form} name="firstName">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label class="text-gray-400">First Name</Form.Label>
+								<Input {...props} bind:value={$formData.firstName} />
+							{/snippet}
+						</Form.Control>
+						<Form.Description></Form.Description>
+						<Form.FieldErrors />
+					</Form.Field>
+					<Form.Field {form} name="lastName">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label class="text-gray-400">Last Name (Optional)</Form.Label>
+								<Input {...props} bind:value={$formData.lastName} />
+							{/snippet}
+						</Form.Control>
+						<Form.Description></Form.Description>
+						<Form.FieldErrors />
+					</Form.Field>
 				</div>
-				<Input id="password" type="password" required />
+				<Form.Field {form} name="email">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label class="text-gray-400">Email</Form.Label>
+							<Input {...props} bind:value={$formData.email} />
+						{/snippet}
+					</Form.Control>
+					<Form.Description></Form.Description>
+					<Form.FieldErrors />
+				</Form.Field>
+				<Form.Field {form} name="password">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label class="text-gray-400">Password</Form.Label>
+							<Input type="password" {...props} bind:value={$formData.password} />
+						{/snippet}
+					</Form.Control>
+					<Form.Description></Form.Description>
+					<Form.FieldErrors />
+				</Form.Field>
+
+				<Form.Button class="w-full">Sign Up</Form.Button>
 			</div>
-			<Button type="submit" class="w-full">Login</Button>
-			<Button variant="outline" class="w-full" formaction="?/continueWithGithub">Login with Google</Button>
-		</div>
+			<div class="mt-4 text-center text-sm">
+				Have an account?
+				<a href="/auth/login" class="underline"> Log In Now </a>
+			</div>
+		</form>
 	</Card.Content>
 </Card.Root>

@@ -9,14 +9,7 @@
 	import Settings2 from 'lucide-svelte/icons/settings-2';
 	import SquareTerminal from 'lucide-svelte/icons/square-terminal';
 
-	let { data } = $props();
-
-	const data = {
-		user: {
-			name: 'shadcn',
-			email: 'm@example.com',
-			avatar: ''
-		},
+	const sidebarData = {
 		navMain: [
 			{
 				title: 'Playground',
@@ -144,8 +137,14 @@
 	import * as Sidebar from '$lib/components/ui/sidebar';
 	import Command from 'lucide-svelte/icons/command';
 	import type { ComponentProps } from 'svelte';
+	import type { SupabaseClient, User } from '@supabase/supabase-js';
+	import type { Data } from '$types/data';
 
-	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+	interface Props extends ComponentProps<typeof Sidebar.Root> {
+		data: Data;
+	}
+
+	let { data, ref = $bindable(null), ...restProps }: Props = $props();
 </script>
 
 <Sidebar.Root bind:ref variant="inset" {...restProps}>
@@ -171,11 +170,11 @@
 		</Sidebar.Menu>
 	</Sidebar.Header>
 	<Sidebar.Content>
-		<NavMain items={data.navMain} />
-		<NavProjects projects={data.projects} />
-		<NavSecondary items={data.navSecondary} class="mt-auto" />
+		<NavMain items={sidebarData.navMain} />
+		<NavProjects projects={sidebarData.projects} />
+		<NavSecondary items={sidebarData.navSecondary} class="mt-auto" />
 	</Sidebar.Content>
 	<Sidebar.Footer>
-		<NavUser user={data.user} />
+		<NavUser {data} />
 	</Sidebar.Footer>
 </Sidebar.Root>

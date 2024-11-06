@@ -15,7 +15,7 @@
 	import { onMount } from 'svelte';
 
 	let { children, data } = $props();
-	let { session, supabase } = data;
+	let { session, supabase, user } = data;
 
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
@@ -31,7 +31,7 @@
 <ModeWatcher />
 
 <Sidebar.Provider>
-	<AppSidebar />
+	<AppSidebar {data} />
 	<Sidebar.Inset>
 		<header class="flex h-16 shrink-0 items-center gap-2">
 			<div class="flex items-center gap-2 px-4">

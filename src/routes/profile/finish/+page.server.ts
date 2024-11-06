@@ -4,15 +4,37 @@ import type { Actions } from "./$types";
 import type { PageServerLoad } from "./$types";
 import { superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import { loginSchema } from "./schema";
+import { finishSchema } from "./schema";
 
 export const load: PageServerLoad = async () => {
   return {
-    form: await superValidate(zod(loginSchema)),
+    form: await superValidate(zod(finishSchema)),
   };
 };
 
 export const actions: Actions = {
+  finish: async ({ request, locals: { supabase } }) => {
+    const formData = await request.formData();
+    const username = formData.get("username") as string;
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      data: {
+        user_name: username,
+        first_name: firstName,
+        last_name: lastName,
+      },
+    });
+
+    if (updateError) {
+      console.error(updateError);
+      redirect(303, "/auth/error");
+    }
+
+    redirect(303, "/");
+  },
+
   login: async ({ request, locals: { supabase } }) => {
     const formData = await request.formData();
     const email = formData.get("email") as string;
